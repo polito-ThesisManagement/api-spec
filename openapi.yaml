@@ -1,0 +1,80 @@
+openapi: '3.0.3'
+info:
+  version: '1.0.0'
+  title: 'Polito Thesis Management API'
+servers:
+  - url: https://didattica.polito.it/api
+    description: Production server (uses live data)
+  - url: https://didattica.polito.it/mock/api
+    description: Mock server (uses example data)
+paths:
+    /companies:
+        get:
+            tags:
+                - Student
+            summary: List companies | Elenca aziende
+            operationId: getCompanies
+            responses:
+                200:
+                  description: Success
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Company'
+                        required: [ data ]
+                500:
+                  $ref: '#/components/responses/ErrorResponse'
+
+components:
+    responses:
+        ErrorResponse:
+            description: Server error
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+    schemas:
+        Company:
+            type: object
+            properties:
+                id:
+                  type: number
+                  example: 1
+                corporateName:
+                    type: string
+                    example: 'Accenture SpA'
+                registeredOffice:
+                    type: object
+                    properties:
+                        street:
+                            type: string
+                            example: 'Via Privata Nino Bonnet 10/10A'
+                        postalCode:
+                            type: string
+                            example: '20154'
+                        city:
+                            type: string
+                            example: 'Milano'
+                        stateOrProvince:
+                            type: string
+                            example: 'MI'
+                        country:
+                            type: string
+                            example: 'Italy'
+                    required: [street, city, country]
+        Error:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    example: 2
+                message:
+                    type: string
+                    example: Error message
+            
+    
