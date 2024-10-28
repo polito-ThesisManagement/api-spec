@@ -7,29 +7,46 @@ servers:
     description: Production server (uses live data)
   - url: https://didattica.polito.it/mock/api
     description: Mock server (uses example data)
+security:
+  - bearerAuth: []
 paths:
-    /companies:
-        get:
+    /auth/login:
+        post:
             tags:
-                - Student
-            summary: List companies | Elenca aziende
-            operationId: getCompanies
+                - Auth
+            security: [ ]
+            summary: Login
+            operationId: login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginRequest'
             responses:
                 200:
-                  description: Success
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Company'
-                        required: [ data ]
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        $ref: '#/components/schemas/Identity'
+                                required: [data]
                 500:
-                  $ref: '#/components/responses/ErrorResponse'
-
+                    $ref: '#/components/responses/ErrorResponse'
+    /auth/logout:
+        delete:
+            tags:
+                - Auth
+            summary: Logout
+            description: Invalidates the provided token
+            operationId: logout
+            responses:
+                200:
+                    description: Success
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
 components:
     responses:
         ErrorResponse:
@@ -38,35 +55,34 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/Error'
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
     schemas:
-        Company:
+        LoginRequest:
             type: object
             properties:
-                id:
-                  type: number
-                  example: 1
-                corporateName:
+                username:
                     type: string
-                    example: 'Accenture SpA'
-                registeredOffice:
-                    type: object
-                    properties:
-                        street:
-                            type: string
-                            example: 'Via Privata Nino Bonnet 10/10A'
-                        postalCode:
-                            type: string
-                            example: '20154'
-                        city:
-                            type: string
-                            example: 'Milano'
-                        stateOrProvince:
-                            type: string
-                            example: 'MI'
-                        country:
-                            type: string
-                            example: 'Italy'
-                    required: [street, city, country]
+                    example: s290683
+                password:
+                    type: string
+                    example: moreSecret
+            required: [username, password]
+        Identity:
+            type: object
+            properties:
+                username:
+                    type: string
+                    example: 's290683'
+                type:
+                    type: string
+                    example: 'student'
+                token:
+                    type: string
+                    example: c679fa38ff665df6a676acd833194385
+            required: [ username, type, token ]
         Error:
             type: object
             properties:
@@ -76,5 +92,4 @@ components:
                 message:
                     type: string
                     example: Error message
-            
-    
+            required: [code, message]
