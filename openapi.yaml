@@ -10,6 +10,43 @@ servers:
 security:
   - bearerAuth: []
 paths:
+    /auth/login:
+        post:
+            tags:
+                - Auth
+            security: [ ]
+            summary: Login
+            operationId: login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginRequest'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        $ref: '#/components/schemas/Identity'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /auth/logout:
+        delete:
+            tags:
+                - Auth
+            summary: Logout
+            description: Invalidates the provided token
+            operationId: logout
+            responses:
+                200:
+                    description: Success
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
     /thesis-proposals:
         get:
             tags:
@@ -113,6 +150,29 @@ components:
                     type: string
                     example: Error message
             required: [code, message]
+        Identity:
+            type: object
+            properties:
+                username:
+                    type: string
+                    example: 's290683'
+                type:
+                    type: string
+                    example: 'student'
+                token:
+                    type: string
+                    example: c679fa38ff665df6a676acd833194385
+            required: [ username, type, token ]
+        LoginRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                    example: s290683
+                password:
+                    type: string
+                    example: moreSecret
+            required: [username, password]
         TeacherOverview:
             type: object
             properties:

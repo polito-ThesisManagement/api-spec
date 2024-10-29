@@ -1,0 +1,27 @@
+name: Validate OpenAPI Endpoints
+
+on:
+  pull_request:
+    paths:
+      - 'openapi.yaml'  # Trigger only if openapi.yaml is modified
+
+jobs:
+  validate-openapi:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Validate the OpenAPI specification
+      - name: Validate OpenAPI Spec
+        uses: thiyagu06/openapi-validator-action@v1
+        with:
+          filepath: openapi.yaml
+
+      # (Optional) Step 3: Fail if validation failed
+      - name: Check if validation passed
+        if: failure()
+        run: |
+          echo "OpenAPI validation failed. Please check your OpenAPI specification for errors."
+          exit 1
