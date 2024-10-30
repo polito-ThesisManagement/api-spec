@@ -433,7 +433,6 @@ components:
                     description: The topic of the thesis
                     example: "A Mobile App for Human Activity Recognition"
                 supervisor:
-                    type: object
                     description: The main supervisor for the thesis
                     $ref: '#/components/schemas/Supervisor'
                 coSupervisors:
@@ -442,7 +441,6 @@ components:
                     items:
                         $ref: '#/components/schemas/Supervisor'
                 company:
-                    type: object
                     description: The company where the thesis may be developed (optional)
                     $ref: '#/components/schemas/Company'
                 submissionDate:
@@ -466,7 +464,6 @@ components:
             type: object
             properties:
                 supervisor:
-                    type: object
                     $ref: '#/components/schemas/Teacher'
                 internalCoSupervisors:
                     type: array
@@ -508,7 +505,6 @@ components:
                         type: string
                     example: ['HAR', 'Sviluppo Applicazioni Mobili']
                 supervisor:
-                    type: object
                     $ref: '#/components/schemas/TeacherOverview'
                 internalCoSupervisors:
                     type: array
