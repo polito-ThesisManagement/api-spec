@@ -47,6 +47,127 @@ paths:
                     description: Success
                 500:
                     $ref: '#/components/responses/ErrorResponse'
+    /companies:
+        get:
+            summary: List companies | Elenca aziende
+            operationId: getCompanies
+            responses:
+                200:
+                  description: Success
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Company'
+                        required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /supervisors:
+        get:
+            summary: List supervisors | Elenca supervisori
+            operationId: getSupervisors
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Supervisor'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-application/eligibility:
+        get:
+            summary: Check if the authenticated student is eligible to send a thesis application | Controlla se lo studente autenticato è idoneo per inviare una richiesta di tesi
+            operationId: checkThesisApplicationEligibility
+            responses:
+                200:
+                    description: Success 
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: object
+                                        properties:
+                                            studentId:
+                                                type: string
+                                                example: 's123456'
+                                            eligible:
+                                                type: boolean
+                                                description: Whether the student is eligible to send a thesis start request
+                                                example: true
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-application:
+        post:            
+            summary: Submit thesis application | Invia richiesta di tesi
+            operationId: submitThesisApplication
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ThesisApplicationRequest'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        $ref: '#/components/schemas/ThesisApplicationResponse'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+        get:
+            summary: Get the authenticated student's last thesis application | Mostra l'ultima richiesta di tesi dello studente autenticato
+            operationId: getThesisApplication
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        $ref: '#/components/schemas/ThesisApplicationResponse'
+                                required: [data]
+                404:
+                    description: Thesis request not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+        delete:            
+            summary: Delete the authenticated student's last thesis start request | Cancella l'ultima richiesta di tesi dello studente autenticato
+            operationId: deleteThesisRequest
+            responses:
+                200:
+                    description: Success
+                404:
+                    description: Thesis request not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
 components:
     responses:
         ErrorResponse:
@@ -60,16 +181,45 @@ components:
             type: http
             scheme: bearer
     schemas:
-        LoginRequest:
+        Company:
             type: object
             properties:
-                username:
+                id:
+                  type: integer
+                  example: 1
+                corporateName:
                     type: string
-                    example: s290683
-                password:
+                    example: 'Accenture SpA'
+                registeredOffice:
+                    type: object
+                    properties:
+                        street:
+                            type: string
+                            example: 'Via Privata Nino Bonnet 10/10A'
+                        postalCode:
+                            type: string
+                            example: '20154'
+                        city:
+                            type: string
+                            example: 'Milano'
+                        stateOrProvince:
+                            type: string
+                            example: 'MI'
+                        country:
+                            type: string
+                            example: 'Italy'
+                    required: [street, city, country]
+            required: [id, corporateName, registeredOffice]
+        Error:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    example: 2
+                message:
                     type: string
-                    example: moreSecret
-            required: [username, password]
+                    example: Error message
+            required: [code, message]
         Identity:
             type: object
             properties:
@@ -83,13 +233,107 @@ components:
                     type: string
                     example: c679fa38ff665df6a676acd833194385
             required: [ username, type, token ]
-        Error:
+        LoginRequest:
             type: object
             properties:
-                code:
-                    type: integer
-                    example: 2
-                message:
+                username:
                     type: string
-                    example: Error message
-            required: [code, message]
+                    example: s290683
+                password:
+                    type: string
+                    example: moreSecret
+            required: [username, password]
+        SupervisorOverview:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 12345
+                type: 
+                    type: string
+                    enum: 
+                        - internal
+                        - external
+            required: [id, type]
+        Supervisor:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/SupervisorOverview'
+            properties:
+                firstName:
+                    type: string
+                    example: 'Marco'
+                lastName:
+                    type: string
+                    example: 'Torchiano'
+                role: 
+                    type: string
+                    example: "Docente"
+                facilityShortName:
+                    type: string
+                    example: "DAUIN"
+                profileUrl: 
+                    type: string
+                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019"
+                email:
+                    type: string
+                    example: 'marco.torchiano@polito.it'
+            required: [firstName, lastName]
+        ThesisApplicationRequest:
+            type: object
+            properties:
+                topic:
+                    type: string
+                    description: The topic of the thesis
+                    example: "A Mobile App for Human Activity Recognition"
+                supervisor:
+                    $ref: '#/components/schemas/SupervisorOverview'
+                coSupervisors:
+                    type: array
+                    description: Optional co-supervisors for the thesis
+                    items:
+                        $ref: '#/components/schemas/SupervisorOverview'
+                companyId:
+                    type: integer
+                    description: The company id where the thesis may be developed (optional)
+                    example: 1
+            required: [topic, supervisor]
+        ThesisApplicationResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: The identifier for the current thesis request
+                    example: 258674
+                topic:
+                    type: string
+                    description: The topic of the thesis
+                    example: "A Mobile App for Human Activity Recognition"
+                supervisor:
+                    type: object
+                    description: The main supervisor for the thesis
+                    $ref: '#/components/schemas/Supervisor'
+                coSupervisors:
+                    type: array
+                    description: Optional internal co-supervisors for the thesis
+                    items:
+                        $ref: '#/components/schemas/Supervisor'
+                company:
+                    type: object
+                    description: The company where the thesis may be developed (optional)
+                    $ref: '#/components/schemas/Company'
+                submissionDate:
+                    type: string
+                    format: date-time
+                    description: The date when the thesis request was submitted
+                    example: '2021-06-01T00:00:00Z'
+                status:
+                    $ref: '#/components/schemas/ThesisApplicationStatus'
+            required: [id, topic, supervisor, submissionDate, status]    
+        ThesisApplicationStatus:
+            type: string
+            enum:
+                - 'pending'
+                - 'approved'
+                - 'rejected'
+                - 'cancelled'
