@@ -1,27 +1,49 @@
-name: Validate OpenAPI Endpoints
+name: Validate OpenAPI Specification
 
 on:
   pull_request:
     paths:
-      - 'openapi.yaml'  # Trigger only if openapi.yaml is modified
+      - 'openapi.yaml'  # Trigger if openapi.yaml is modified
+  push:
+    paths:
+      - 'openapi.yaml'  # Trigger on push to openapi.yaml
 
 jobs:
+  # Job to validate using thiyagu06/openapi-validator-action@v1 on pull request
   validate-openapi:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
-      # Step 1: Check out the repository code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Validate the OpenAPI specification
-      - name: Validate OpenAPI Spec
+      - name: Validate OpenAPI Spec (thiyagu06 action)
         uses: thiyagu06/openapi-validator-action@v1
         with:
           filepath: openapi.yaml
 
-      # (Optional) Step 3: Fail if validation failed
       - name: Check if validation passed
         if: failure()
         run: |
           echo "OpenAPI validation failed. Please check your OpenAPI specification for errors."
           exit 1
+
+  # Job to validate using Swagger Editor on push
+  swagger-editor-validate:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    services:
+      swagger-editor:
+        image: swaggerapi/swagger-editor
+        ports:
+          - 80:8080
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate OpenAPI Spec (Swagger Editor)
+        uses: swaggerexpert/swagger-editor-validate@v1
+        with:
+          swagger-editor-url: http://localhost/
+          definition-file: openapi.yaml
