@@ -47,7 +47,71 @@ paths:
                     description: Success
                 500:
                     $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List thesis proposals | Elenca proposte di tesi
+            operationId: getThesisProposals
+            parameters: 
+                - $ref: '#/components/parameters/languageQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ThesisProposalOverview'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/{thesisProposalId}:
+        get:
+            tags:
+              - Thesis proposals
+            summary: Show thesis proposal | Mostra proposta di tesi
+            operationId: getThesisProposal
+            parameters:
+                - $ref: '#/components/parameters/thesisProposalIdParam'
+                - $ref: '#/components/parameters/languageQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        $ref: '#/components/schemas/ThesisProposal'
+                                required: [data]
+                404:
+                    description: Thesis proposal not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
 components:
+    parameters:
+        languageQueryParam:
+            name: lang
+            in: query
+            required: false
+            schema:
+                type: string
+                enum: [it, en]
+                default: it
+        thesisProposalIdParam:
+            name: thesisProposalId
+            in: path
+            required: true
+            schema:
+                type: integer
     responses:
         ErrorResponse:
             description: Server error
@@ -60,16 +124,32 @@ components:
             type: http
             scheme: bearer
     schemas:
-        LoginRequest:
+        Attachment:
             type: object
             properties:
-                username:
+                id:
+                    type: integer
+                    example: 0
+                filename:
                     type: string
-                    example: s290683
-                password:
+                    example: 'requirements.pdf'
+                mimeType:
                     type: string
-                    example: moreSecret
-            required: [username, password]
+                    example: image/png
+                sizeInKiloBytes:
+                    type: integer
+                    example: 305
+            required: [id, filename, mimeType, sizeInKiloBytes]
+        Error:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    example: 2
+                message:
+                    type: string
+                    example: Error message
+            required: [code, message]
         Identity:
             type: object
             properties:
@@ -83,13 +163,100 @@ components:
                     type: string
                     example: c679fa38ff665df6a676acd833194385
             required: [ username, type, token ]
-        Error:
+        LoginRequest:
             type: object
             properties:
-                code:
-                    type: integer
-                    example: 2
-                message:
+                username:
                     type: string
-                    example: Error message
-            required: [code, message]
+                    example: s290683
+                password:
+                    type: string
+                    example: moreSecret
+            required: [username, password]
+        TeacherOverview:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 12345
+                firstName:
+                    type: string
+                    example: 'Marco'
+                lastName:
+                    type: string
+                    example: 'Torchiano'
+            required: [id, firstName, lastName]
+        Teacher:
+            allOf:
+                - $ref: '#/components/schemas/TeacherOverview'
+            type: object
+            properties:
+                role: 
+                    type: string
+                    example: "Docente"
+                facilityShortName:
+                    type: string
+                    example: "DAUIN"
+                profileUrl: 
+                    type: string
+                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019"
+                email:
+                    type: string
+                    example: 'marco.torchiano@polito.it'
+            required: [role, facilityShortName, profileUrl, email]
+        ThesisProposalOverview:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 258674
+                topic:
+                    type: string
+                    example: 'Un Applicativo Mobile per il Riconoscimento delle Attività Umane'
+                isInternal:
+                    type: boolean
+                    description: If true, it's an internal thesis at Politecnico, otherwise it's external (in a company)
+                isAbroad:
+                    type: boolean
+                    description: If true, it's an abroad thesis
+                keywords:
+                    type: array
+                    items:
+                        type: string
+                    example: ['HAR', 'Sviluppo Applicazioni Mobili']
+                supervisor:
+                    type: object
+                    $ref: '#/components/schemas/TeacherOverview'
+                internalCoSupervisors:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TeacherOverview'
+                description:
+                    type: string
+                    example: "Offrire dati precisi e tempestivi riguardo le attività e i comportamenti degli individui si pone come obiettivo primario nel pervasive computing. Innumerevoli applicazioni potenziali sorgono in vari domini come la medicina, la sicurezza, l'intrattenimento e le operazioni tattiche. Nonostante il riconoscimento delle attività umane (HAR) sia un campo di esplorazione attivo da oltre un decennio, rimangono aspetti cruciali che, se risolti, potrebbero segnare un cambiamento significativo nel modo in cui gli individui interagiscono con i dispositivi mobili. In questa tesi lo studente svilupperà un'applicazione mobile che può raccogliere in modo efficiente i dati dell'utente, pre-elaborarli e usarli per riconoscere l'attività. Questa rilevazione probabilmente avverrà utilizzando un framework di apprendimento distribuito, come il Federated Learning (FL), per combinare la conoscenza di più dispositivi utente."
+                creationDate:
+                    type: string
+                    format: date
+                deadline:
+                    type: string
+                    format: date
+            required: [id, topic, isInternal, isAbroad, supervisor, creationDate, deadline]
+        ThesisProposal:
+            allOf:
+                - $ref: '#/components/schemas/ThesisProposalOverview'
+            type: object
+            properties:
+                externalCoSupervisors:
+                    type: string
+                    example: 'Prof. Flavio Esposito - St. Louis University, USA'
+                type:
+                    type: string
+                    example: 'Tesi sperimentale'
+                attachment:
+                    $ref: '#/components/schemas/Attachment'
+                link:
+                    type: string
+                requiredSkills:
+                    type: string
+                notes:
+                    type: string
