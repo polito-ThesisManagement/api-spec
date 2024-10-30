@@ -98,6 +98,8 @@ paths:
                                 $ref: '#/components/schemas/Error'
     /companies:
         get:
+            tags: 
+                - Companies
             summary: List companies | Elenca aziende
             operationId: getCompanies
             responses:
@@ -117,6 +119,8 @@ paths:
                     $ref: '#/components/responses/ErrorResponse'
     /supervisors:
         get:
+            tags:
+                - Supervisors
             summary: List supervisors | Elenca supervisori
             operationId: getSupervisors
             responses:
@@ -136,6 +140,8 @@ paths:
                     $ref: '#/components/responses/ErrorResponse'
     /thesis-application/eligibility:
         get:
+            tags:
+                - Thesis application
             summary: Check if the authenticated student is eligible to send a thesis application | Controlla se lo studente autenticato è idoneo per inviare una richiesta di tesi
             operationId: checkThesisApplicationEligibility
             responses:
@@ -159,7 +165,9 @@ paths:
                 500:
                     $ref: '#/components/responses/ErrorResponse'
     /thesis-application:
-        post:            
+        post:  
+            tags:
+                - Thesis application              
             summary: Submit thesis application | Invia richiesta di tesi
             operationId: submitThesisApplication
             requestBody:
@@ -182,6 +190,8 @@ paths:
                 500:
                     $ref: '#/components/responses/ErrorResponse'
         get:
+            tags:
+                - Thesis application
             summary: Get the authenticated student's last thesis application | Mostra l'ultima richiesta di tesi dello studente autenticato
             operationId: getThesisApplication
             responses:
@@ -203,7 +213,9 @@ paths:
                                 $ref: '#/components/schemas/Error'
                 500:
                     $ref: '#/components/responses/ErrorResponse'
-        delete:            
+        delete:
+            tags:
+                - Thesis application            
             summary: Delete the authenticated student's last thesis start request | Cancella l'ultima richiesta di tesi dello studente autenticato
             operationId: deleteThesisRequest
             responses:
@@ -323,18 +335,6 @@ components:
                     type: string
                     example: moreSecret
             required: [username, password]
-        SupervisorOverview:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    example: 12345
-                type: 
-                    type: string
-                    enum: 
-                        - internal
-                        - external
-            required: [id, type]
         Supervisor:
             type: object
             allOf:
@@ -359,19 +359,18 @@ components:
                     type: string
                     example: 'marco.torchiano@polito.it'
             required: [firstName, lastName]
-        TeacherOverview:
+        SupervisorOverview:
             type: object
             properties:
                 id:
                     type: integer
                     example: 12345
-                firstName:
+                type: 
                     type: string
-                    example: 'Marco'
-                lastName:
-                    type: string
-                    example: 'Torchiano'
-            required: [id, firstName, lastName]
+                    enum: 
+                        - internal
+                        - external
+            required: [id, type]
         Teacher:
             allOf:
                 - $ref: '#/components/schemas/TeacherOverview'
@@ -390,6 +389,19 @@ components:
                     type: string
                     example: 'marco.torchiano@polito.it'
             required: [role, facilityShortName, profileUrl, email]
+        TeacherOverview:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 12345
+                firstName:
+                    type: string
+                    example: 'Marco'
+                lastName:
+                    type: string
+                    example: 'Torchiano'
+            required: [id, firstName, lastName]
         ThesisApplicationRequest:
             type: object
             properties:
@@ -448,6 +460,33 @@ components:
                 - 'approved'
                 - 'rejected'
                 - 'cancelled'
+        ThesisProposal:
+            allOf:
+                - $ref: '#/components/schemas/ThesisProposalOverview'
+            type: object
+            properties:
+                supervisor:
+                    type: object
+                    $ref: '#/components/schemas/Teacher'
+                internalCoSupervisors:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Teacher'
+                externalCoSupervisors:
+                    type: string
+                    example: 'Prof. Flavio Esposito - St. Louis University, USA'
+                type:
+                    type: string
+                    example: 'Tesi sperimentale'
+                attachment:
+                    $ref: '#/components/schemas/Attachment'
+                link:
+                    type: string
+                requiredSkills:
+                    type: string
+                notes:
+                    type: string   
+            required: [supervisor]
         ThesisProposalOverview:
             type: object
             properties:
@@ -485,23 +524,4 @@ components:
                     type: string
                     format: date
             required: [id, topic, isInternal, isAbroad, supervisor, creationDate, deadline]
-        ThesisProposal:
-            allOf:
-                - $ref: '#/components/schemas/ThesisProposalOverview'
-            type: object
-            properties:
-                externalCoSupervisors:
-                    type: string
-                    example: 'Prof. Flavio Esposito - St. Louis University, USA'
-                type:
-                    type: string
-                    example: 'Tesi sperimentale'
-                attachment:
-                    $ref: '#/components/schemas/Attachment'
-                link:
-                    type: string
-                requiredSkills:
-                    type: string
-                notes:
-                    type: string   
         
