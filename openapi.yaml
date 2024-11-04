@@ -123,6 +123,8 @@ paths:
                 - Supervisors
             summary: List supervisors | Elenca supervisori
             operationId: getSupervisors
+            parameters: 
+                - $ref: '#/components/parameters/languageQueryParam'
             responses:
                 200:
                     description: Success
@@ -516,8 +518,8 @@ components:
                 creationDate:
                     type: string
                     format: date
-                deadline:
+                expirationDate:
                     type: string
                     format: date
-            required: [id, topic, isInternal, isAbroad, supervisor, creationDate, deadline]
+            required: [id, topic, isInternal, isAbroad, supervisor, creationDate, expirationDate]
         
