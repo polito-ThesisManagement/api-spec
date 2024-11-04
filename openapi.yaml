@@ -164,6 +164,7 @@ paths:
                                                 type: boolean
                                                 description: Whether the student is eligible to send a thesis start request
                                                 example: true
+                                required: [data]
                 500:
                     $ref: '#/components/responses/ErrorResponse'
     /thesis-application:
@@ -225,6 +226,173 @@ paths:
                     description: Success
                 404:
                     description: Thesis request not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /sustainable-development-goals:
+        get:
+            tags:
+              - Sustainable development goals
+            summary: List sustainable development goals | Elenca obiettivi di sviluppo sostenibile
+            operationId: getSustainableDevelopmentGoals
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/SustainableDevelopmentGoal'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'    
+    /embargo-motivations:
+        get: 
+            tags:
+              - Embargo motivations          
+            summary: List embargo motivations | Elenca motivazioni di embargo
+            operationId: getEmbargoMotivations
+            parameters:
+              - $ref: '#/components/parameters/languageQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/EmbargoMotivation'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /languages:
+        get:     
+            tags:
+              - Languages
+            summary: List languages | Elenca lingue
+            operationId: getLanguages
+            parameters:
+              - $ref: '#/components/parameters/languageQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            type: string
+                                        example: ['Italiano', 'Inglese']
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'    
+    /licenses:
+        get:     
+            tags:
+              - Licenses
+            summary: List licenses | Elenca licenze
+            operationId: getLicenses
+            parameters:
+              - $ref: '#/components/parameters/languageQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/License'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis/conclusion-request/eligibility:
+        get:
+            tags:
+              - Thesis conclusion request
+            summary: Check if the authenticated student is eligible to send a thesis conclusion request | Controlla se lo studente autenticato è idoneo per inviare una richiesta di conclusione tesi
+            operationId: checkThesisConclusionRequestEligibility
+            responses:
+                200:
+                    description: Success 
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: object
+                                        properties:
+                                            studentId:
+                                                type: string
+                                                example: 's123456'
+                                            eligible:
+                                                type: boolean
+                                                description: Whether the student is eligible to send a thesis conclusion request
+                                                example: true
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis/conclusion-request:
+        post:    
+            tags:
+                - Thesis conclusion request
+            summary: Send thesis conclusion request | Invia richiesta di conclusione tesi
+            operationId: sendThesisConclusionRequest
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            $ref: '#/components/schemas/ThesisConclusionRequest'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        $ref: '#/components/schemas/ThesisConclusionResponse'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+        get:  
+            tags:
+                - Thesis conclusion request
+            summary: Get the authenticated student's thesis conclusion request | Mostra richiesta di conclusione tesi dello studente autenticato
+            operationId: getThesisConclusionRequest
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        $ref: '#/components/schemas/ThesisConclusionResponse'
+                                required: [data]
+                404:
+                    description: Thesis conclusion request not found
                     content:
                         application/json:
                             schema:
@@ -304,6 +472,35 @@ components:
                             example: 'Italy'
                     required: [street, city, country]
             required: [id, corporateName, registeredOffice]
+        Embargo:
+            type: object
+            properties:
+                motivationId:
+                    type: integer
+                    example: 1
+                otherMotivation:
+                    type: string
+                    example: 'Motivazione personalizzata'
+                    description: 'Custom motivation'
+                monthDuration:
+                    oneOf:
+                        - type: integer
+                          enum: [12, 18, 36]
+                          example: 12
+                        - type: string
+                          enum: ['after explicit consent']
+                          example: 'after explicit consent'
+            required: [motivationId, monthDuration]
+        EmbargoMotivation:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                motivation:
+                    type: string
+                    example: 'Pubblicazione editoriale' 
+            required: [id, motivation]
         Error:
             type: object
             properties:
@@ -327,6 +524,19 @@ components:
                     type: string
                     example: c679fa38ff665df6a676acd833194385
             required: [ username, type, token ]
+        License:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                name:
+                    type: string
+                    example: 'Attribuzione CC BY'
+                description:
+                    type: string
+                    example: "Questa licenza permette a terzi di distribuire, modificare, ottimizzare ed utilizzare la tua opera come base, anche commerciale, fino a che ti diano il credito per la creazione originale. Questa è la più accomodante delle licenze offerte. É raccomandata per la diffusione e l'uso massimo di materiali coperti da licenza."
+            required: [id, name, description]
         LoginRequest:
             type: object
             properties:
@@ -373,6 +583,19 @@ components:
                         - internal
                         - external
             required: [id, type]
+        SustainableDevelopmentGoal:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                description:
+                    type: string
+                    example: 'No poverty'
+                image:
+                    type: string
+                    example: 'https://www.un.org/sustainabledevelopment/wp-content/uploads/2016/08/1.png'
+            required: [id, description, image]
         Teacher:
             allOf:
                 - $ref: '#/components/schemas/TeacherOverview'
@@ -460,6 +683,75 @@ components:
                 - 'approved'
                 - 'rejected'
                 - 'cancelled'
+        ThesisConclusionRequest:
+            type: object
+            properties:
+                supervisorId: 
+                    type: integer
+                    example: 12345
+                CoSupervisorsIds:
+                    type: array
+                    items:
+                        type: integer
+                    example: [12346, 12347]
+                abstract:
+                    type: string
+                    description: The abstract of the thesis
+                    example: "Il riconoscimento delle attività umane (HAR) è un campo di ricerca attivo da oltre un decennio. In questa tesi lo studente svilupperà un'applicazione mobile che può raccogliere in modo efficiente i dati dell'utente, pre-elaborarli e usarli per riconoscere l'attività. Questa rilevazione probabilmente avverrà utilizzando un framework di apprendimento distribuito, come il Federated Learning (FL), per combinare la conoscenza di più dispositivi utente."
+                abstractEng:
+                    type: string
+                    description: The abstract of the thesis in English
+                    example: "Human activity recognition (HAR) has been an active research field for over a decade. In this thesis, the student will develop a mobile application that can efficiently collect user data, preprocess them, and use them to recognize the activity. This detection will likely occur using a distributed learning framework, such as Federated Learning (FL), to combine the knowledge of multiple user devices."
+                title:
+                    type: string
+                    description: The title of the thesis
+                    example: "Un Applicativo Mobile per il Riconoscimento delle Attività Umane"
+                titleEng:
+                    type: string
+                    description: The title of the thesis in English
+                    example: "A Mobile App for Human Activity Recognition"
+                language:
+                    type: string
+                    example: 'Italiano'
+                keywords:
+                    type: array
+                    items:
+                        type: string
+                    example: ['HAR', 'Mobile Application Development']
+                sustainableDevelopmentGoalsIds:
+                    type: array
+                    items:
+                        type: integer
+                        example: [1, 2]
+                        maxItems: 3
+                thesisFile:
+                    type: string
+                    format: binary
+                thesisResume:
+                    type: string
+                    format: binary
+                embargo:
+                    type: object
+                    $ref: '#/components/schemas/Embargo'
+                licenseId:    
+                    type: integer
+                    example: 1
+            required: [supervisorId, titleEng, abstract, abstractEng, language, thesisFile, licenseId]
+        ThesisConclusionResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                status: 
+                    $ref: '#/components/schemas/ThesisConclusionStatus' 
+            required: [id, status]   
+        ThesisConclusionStatus:
+            type: string
+            enum:
+                - 'pending'
+                - 'approved'
+                - 'rejected'
         ThesisProposal:
             allOf:
                 - $ref: '#/components/schemas/ThesisProposalOverview'
