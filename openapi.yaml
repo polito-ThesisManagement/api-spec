@@ -232,6 +232,50 @@ paths:
                                 $ref: '#/components/schemas/Error'
                 500:
                     $ref: '#/components/responses/ErrorResponse'
+    /thesis: 
+        get:            
+            tags:
+                - Thesis
+            summary: Show the authenticated student's thesis | Mostra la tesi dello studente autenticato
+            operationId: getThesis
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Thesis'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /graduation-deadlines:
+        get:
+            tags:
+              - Deadlines
+            summary: List graduation periods deadlines | Elenca scadenze sessioni esami di laurea
+            operationId: getDeadlines
+            parameters:
+                - $ref: '#/components/parameters/languageQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Deadline'
+                                required: [ data ]                                    
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
     /sustainable-development-goals:
         get:
             tags:
@@ -472,6 +516,26 @@ components:
                             example: 'Italy'
                     required: [street, city, country]
             required: [id, corporateName, registeredOffice]
+        Deadline:
+            type: object
+            properties:
+                id:
+                    type: number
+                    example: 42
+                name:
+                    type: string
+                    example: Deadline for submitting the Thesis Application
+                type:
+                    type: string
+                    example: Graduation periods
+                url:
+                    type: string
+                    nullable: true
+                date:
+                    type: string
+                    format: date
+                    example: '2024-06-03'
+            required: [ name, type, url, date ]
         Embargo:
             type: object
             properties:
@@ -627,6 +691,40 @@ components:
                     type: string
                     example: 'Torchiano'
             required: [id, firstName, lastName]
+        Thesis:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 258674
+                topic:
+                    type: string
+                    example: 'Un Applicativo Mobile per il Riconoscimento delle Attività Umane'
+                supervisor:
+                    type: object
+                    $ref: '#/components/schemas/Supervisor'
+                coSupervisors:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Supervisor'
+                company:
+                    type: object
+                    $ref: '#/components/schemas/Company'
+                thesisApplicationDate:
+                    type: string
+                    format: date-time
+                    example: '2021-06-01T00:00:00Z'
+                thesisConclusionRequestDate:
+                    type: string
+                    format: date-time
+                    example: '2021-06-01T00:00:00Z'
+                    nullable: true
+                thesisConclusionConfirmationDate:
+                    type: string
+                    format: date-time
+                    example: '2021-06-01T00:00:00Z'
+                    nullable: true
+            required: [id, topic, supervisor, thesisApplicationDate]
         ThesisApplicationRequest:
             type: object
             properties:
