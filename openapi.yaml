@@ -232,27 +232,6 @@ paths:
                                 $ref: '#/components/schemas/Error'
                 500:
                     $ref: '#/components/responses/ErrorResponse'
-    /thesis: 
-        get:            
-            tags:
-                - Thesis
-            summary: Show the authenticated student's thesis | Mostra la tesi dello studente autenticato
-            operationId: getThesis
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    data:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Thesis'
-                                required: [data]
-                500:
-                    $ref: '#/components/responses/ErrorResponse'
     /graduation-deadlines:
         get:
             tags:
@@ -367,6 +346,27 @@ paths:
                                 required: [data]
                 500:
                     $ref: '#/components/responses/ErrorResponse'
+    /thesis: 
+        get:            
+            tags:
+                - Thesis
+            summary: Show the authenticated student's thesis | Mostra la tesi dello studente autenticato
+            operationId: getThesis
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Thesis'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
     /thesis/conclusion-request/eligibility:
         get:
             tags:
@@ -441,6 +441,41 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Error'
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis/conclusion-request/file-conversion:
+        post:
+            tags:
+                - Thesis conclusion request
+            summary: Convert thesis PDF to PDF/A format | Converti il PDF della tesi in formato PDF/A
+            operationId: convertPdfToPdfA
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                thesisFile:
+                                    type: string
+                                    format: binary
+                                    description: The PDF file of the thesis to be converted to PDF/A format.
+                            required: [thesisFile]
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: object
+                                        properties:
+                                            convertedFileUrl:
+                                                type: string
+                                                format: uri
+                                                description: The URL to download the converted PDF/A file.
                 500:
                     $ref: '#/components/responses/ErrorResponse'
 components:
