@@ -900,8 +900,10 @@ components:
                     type: string
                     example: 'Prof. Flavio Esposito - St. Louis University, USA'
                 type:
-                    type: string
-                    example: 'Tesi sperimentale'
+                    type: array
+                    items:
+                        type: string
+                    example: ['Tesi sperimentale', 'Tesi di ricerca']
                 attachment:
                     $ref: '#/components/schemas/Attachment'
                 link:
@@ -946,5 +948,5 @@ components:
                 expirationDate:
                     type: string
                     format: date
-            required: [id, topic, isInternal, isAbroad, supervisor, creationDate, expirationDate]
+            required: [id, topic, isInternal, isAbroad, supervisor, description, creationDate, expirationDate]
         
