@@ -899,18 +899,28 @@ components:
                 externalCoSupervisors:
                     type: string
                     example: 'Prof. Flavio Esposito - St. Louis University, USA'
-                type:
-                    type: string
-                    example: 'Tesi sperimentale'
+                types:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ThesisProposalType'
                 attachment:
                     $ref: '#/components/schemas/Attachment'
                 link:
                     type: string
                 requiredSkills:
                     type: string
-                notes:
+                additionalNotes:
                     type: string   
             required: [supervisor]
+        ThesisProposalKeyword:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                keyword:
+                    type: string
+                    example: 'HAR' 
         ThesisProposalOverview:
             type: object
             properties:
@@ -929,8 +939,7 @@ components:
                 keywords:
                     type: array
                     items:
-                        type: string
-                    example: ['HAR', 'Sviluppo Applicazioni Mobili']
+                        $ref: '#/components/schemas/ThesisProposalKeyword'
                 supervisor:
                     $ref: '#/components/schemas/TeacherOverview'
                 internalCoSupervisors:
@@ -946,5 +955,13 @@ components:
                 expirationDate:
                     type: string
                     format: date
-            required: [id, topic, isInternal, isAbroad, supervisor, creationDate, expirationDate]
-        
+            required: [id, topic, isInternal, isAbroad, supervisor, description, creationDate, expirationDate]
+        ThesisProposalType:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                type:
+                    type: string
+                    example: 'Tesi sperimentale'
