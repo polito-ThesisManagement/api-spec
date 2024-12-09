@@ -703,15 +703,18 @@ components:
                 role: 
                     type: string
                     example: "Docente"
-                facilityShortName:
-                    type: string
-                    example: "DAUIN"
-                profileUrl: 
-                    type: string
-                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019"
                 email:
                     type: string
                     example: 'marco.torchiano@polito.it'
+                profileUrl: 
+                    type: string
+                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019"
+                profilePictureUrl:
+                    type: string
+                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019/foto"
+                facilityShortName:
+                    type: string
+                    example: "DAUIN"
             required: [role, facilityShortName, profileUrl, email]
         TeacherOverview:
             type: object
@@ -899,10 +902,6 @@ components:
                 externalCoSupervisors:
                     type: string
                     example: 'Prof. Flavio Esposito - St. Louis University, USA'
-                types:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/ThesisProposalType'
                 attachment:
                     $ref: '#/components/schemas/Attachment'
                 link:
@@ -930,6 +929,15 @@ components:
                 topic:
                     type: string
                     example: 'Un Applicativo Mobile per il Riconoscimento delle Attività Umane'
+                description:
+                    type: string
+                    example: "Offrire dati precisi e tempestivi riguardo le attività e i comportamenti degli individui si pone come obiettivo primario nel pervasive computing. Innumerevoli applicazioni potenziali sorgono in vari domini come la medicina, la sicurezza, l'intrattenimento e le operazioni tattiche. Nonostante il riconoscimento delle attività umane (HAR) sia un campo di esplorazione attivo da oltre un decennio, rimangono aspetti cruciali che, se risolti, potrebbero segnare un cambiamento significativo nel modo in cui gli individui interagiscono con i dispositivi mobili. In questa tesi lo studente svilupperà un'applicazione mobile che può raccogliere in modo efficiente i dati dell'utente, pre-elaborarli e usarli per riconoscere l'attività. Questa rilevazione probabilmente avverrà utilizzando un framework di apprendimento distribuito, come il Federated Learning (FL), per combinare la conoscenza di più dispositivi utente."
+                creationDate:
+                    type: string
+                    format: date-time
+                expirationDate:
+                    type: string
+                    format: date-time
                 isInternal:
                     type: boolean
                     description: If true, it's an internal thesis at Politecnico, otherwise it's external (in a company)
@@ -940,22 +948,17 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ThesisProposalKeyword'
+                types:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ThesisProposalType'
                 supervisor:
                     $ref: '#/components/schemas/TeacherOverview'
                 internalCoSupervisors:
                     type: array
                     items:
                         $ref: '#/components/schemas/TeacherOverview'
-                description:
-                    type: string
-                    example: "Offrire dati precisi e tempestivi riguardo le attività e i comportamenti degli individui si pone come obiettivo primario nel pervasive computing. Innumerevoli applicazioni potenziali sorgono in vari domini come la medicina, la sicurezza, l'intrattenimento e le operazioni tattiche. Nonostante il riconoscimento delle attività umane (HAR) sia un campo di esplorazione attivo da oltre un decennio, rimangono aspetti cruciali che, se risolti, potrebbero segnare un cambiamento significativo nel modo in cui gli individui interagiscono con i dispositivi mobili. In questa tesi lo studente svilupperà un'applicazione mobile che può raccogliere in modo efficiente i dati dell'utente, pre-elaborarli e usarli per riconoscere l'attività. Questa rilevazione probabilmente avverrà utilizzando un framework di apprendimento distribuito, come il Federated Learning (FL), per combinare la conoscenza di più dispositivi utente."
-                creationDate:
-                    type: string
-                    format: date
-                expirationDate:
-                    type: string
-                    format: date
-            required: [id, topic, isInternal, isAbroad, supervisor, description, creationDate, expirationDate]
+            required: [id, topic, description, creationDate, expirationDate, isInternal, isAbroad, keywords, types, supervisor, internalCoSupervisors]
         ThesisProposalType:
             type: object
             properties:
