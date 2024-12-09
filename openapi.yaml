@@ -55,6 +55,14 @@ paths:
             operationId: getThesisProposals
             parameters: 
                 - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+                - $ref: '#/components/parameters/isInternalQueryParam'
+                - $ref: '#/components/parameters/isAbroadQueryParam'
+                - $ref: '#/components/parameters/teacherIdQueryParam'
+                - $ref: '#/components/parameters/keywordIdQueryParam'
+                - $ref: '#/components/parameters/typeIdQueryParam'
+                - $ref: '#/components/parameters/sortByQueryParam'
+                - $ref: '#/components/parameters/orderByQueryParam'
             responses:
                 200:
                     description: Success
@@ -67,6 +75,108 @@ paths:
                                         type: array
                                         items:
                                             $ref: '#/components/schemas/ThesisProposalOverview'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/targeted:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List targeted thesis proposals | Elenca proposte di tesi mirate
+            operationId: getTargetedThesisProposals
+            parameters: 
+                - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+                - $ref: '#/components/parameters/isInternalQueryParam'
+                - $ref: '#/components/parameters/isAbroadQueryParam'
+                - $ref: '#/components/parameters/teacherIdQueryParam'
+                - $ref: '#/components/parameters/keywordIdQueryParam'
+                - $ref: '#/components/parameters/typeIdQueryParam'
+                - $ref: '#/components/parameters/sortByQueryParam'
+                - $ref: '#/components/parameters/orderByQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ThesisProposalOverview'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/types:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List thesis proposal types | Elenca tipologie di proposte di tesi
+            operationId: getThesisProposalTypes
+            parameters:
+                - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ThesisProposalType'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/keywords:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List thesis proposal keywords | Elenca parole chiave delle proposte di tesi
+            operationId: getThesisProposalKeywords
+            parameters:
+                - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ThesisProposalKeyword'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/teachers:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List thesis proposal teachers | Elenca docenti delle proposte di tesi
+            operationId: getThesisProposalTeachers
+            parameters:
+                - $ref: '#/components/parameters/searchQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/TeacherOverview'
                                 required: [data]
                 500:
                     $ref: '#/components/responses/ErrorResponse'
@@ -488,12 +598,78 @@ components:
                 type: string
                 enum: [it, en]
                 default: it
+        pageQueryParam:
+            name: page
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 1
+        limitQueryParam:
+            name: limit
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 10
         thesisProposalIdParam:
             name: thesisProposalId
             in: path
             required: true
             schema:
                 type: integer
+        searchQueryParam:
+            name: search
+            in: query
+            required: false
+            schema:
+                type: string
+        isInternalQueryParam:
+            name: isInternal
+            in: query
+            required: false
+            schema:
+                type: boolean
+        isAbroadQueryParam:
+            name: isAbroad
+            in: query
+            required: false
+            schema:
+                type: boolean
+        teacherIdQueryParam:
+            name: teacherId
+            in: query
+            required: false
+            schema:
+                type: integer
+        keywordIdQueryParam:
+            name: keywordId
+            in: query
+            required: false
+            schema:
+                type: integer
+        typeIdQueryParam:
+            name: typeId
+            in: query
+            required: false
+            schema:
+                type: integer
+        sortByQueryParam:
+            name: sortBy
+            in: query
+            required: false
+            schema:
+                type: string
+                enum: [topic, description, isInternal, isAbroad, creationDate, expirationDate]
+                default: creationDate
+        orderByQueryParam:
+            name: orderBy
+            in: query
+            required: false
+            schema:
+                type: string
+                enum: [asc, desc]
+                default: asc
     responses:
         ErrorResponse:
             description: Server error
