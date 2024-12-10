@@ -55,6 +55,14 @@ paths:
             operationId: getThesisProposals
             parameters: 
                 - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+                - $ref: '#/components/parameters/isInternalQueryParam'
+                - $ref: '#/components/parameters/isAbroadQueryParam'
+                - $ref: '#/components/parameters/teacherIdQueryParam'
+                - $ref: '#/components/parameters/keywordIdQueryParam'
+                - $ref: '#/components/parameters/typeIdQueryParam'
+                - $ref: '#/components/parameters/sortByQueryParam'
+                - $ref: '#/components/parameters/orderByQueryParam'
             responses:
                 200:
                     description: Success
@@ -67,6 +75,108 @@ paths:
                                         type: array
                                         items:
                                             $ref: '#/components/schemas/ThesisProposalOverview'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/targeted:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List targeted thesis proposals | Elenca proposte di tesi mirate
+            operationId: getTargetedThesisProposals
+            parameters: 
+                - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+                - $ref: '#/components/parameters/isInternalQueryParam'
+                - $ref: '#/components/parameters/isAbroadQueryParam'
+                - $ref: '#/components/parameters/teacherIdQueryParam'
+                - $ref: '#/components/parameters/keywordIdQueryParam'
+                - $ref: '#/components/parameters/typeIdQueryParam'
+                - $ref: '#/components/parameters/sortByQueryParam'
+                - $ref: '#/components/parameters/orderByQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ThesisProposalOverview'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/types:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List thesis proposal types | Elenca tipologie di proposte di tesi
+            operationId: getThesisProposalTypes
+            parameters:
+                - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ThesisProposalType'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/keywords:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List thesis proposal keywords | Elenca parole chiave delle proposte di tesi
+            operationId: getThesisProposalKeywords
+            parameters:
+                - $ref: '#/components/parameters/languageQueryParam'
+                - $ref: '#/components/parameters/searchQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ThesisProposalKeyword'
+                                required: [data]
+                500:
+                    $ref: '#/components/responses/ErrorResponse'
+    /thesis-proposals/teachers:
+        get:
+            tags:
+              - Thesis proposals
+            summary: List thesis proposal teachers | Elenca docenti delle proposte di tesi
+            operationId: getThesisProposalTeachers
+            parameters:
+                - $ref: '#/components/parameters/searchQueryParam'
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/TeacherOverview'
                                 required: [data]
                 500:
                     $ref: '#/components/responses/ErrorResponse'
@@ -488,12 +598,78 @@ components:
                 type: string
                 enum: [it, en]
                 default: it
+        pageQueryParam:
+            name: page
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 1
+        limitQueryParam:
+            name: limit
+            in: query
+            required: false
+            schema:
+                type: integer
+                default: 10
         thesisProposalIdParam:
             name: thesisProposalId
             in: path
             required: true
             schema:
                 type: integer
+        searchQueryParam:
+            name: search
+            in: query
+            required: false
+            schema:
+                type: string
+        isInternalQueryParam:
+            name: isInternal
+            in: query
+            required: false
+            schema:
+                type: boolean
+        isAbroadQueryParam:
+            name: isAbroad
+            in: query
+            required: false
+            schema:
+                type: boolean
+        teacherIdQueryParam:
+            name: teacherId
+            in: query
+            required: false
+            schema:
+                type: integer
+        keywordIdQueryParam:
+            name: keywordId
+            in: query
+            required: false
+            schema:
+                type: integer
+        typeIdQueryParam:
+            name: typeId
+            in: query
+            required: false
+            schema:
+                type: integer
+        sortByQueryParam:
+            name: sortBy
+            in: query
+            required: false
+            schema:
+                type: string
+                enum: [topic, description, isInternal, isAbroad, creationDate, expirationDate]
+                default: creationDate
+        orderByQueryParam:
+            name: orderBy
+            in: query
+            required: false
+            schema:
+                type: string
+                enum: [asc, desc]
+                default: asc
     responses:
         ErrorResponse:
             description: Server error
@@ -703,15 +879,18 @@ components:
                 role: 
                     type: string
                     example: "Docente"
-                facilityShortName:
-                    type: string
-                    example: "DAUIN"
-                profileUrl: 
-                    type: string
-                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019"
                 email:
                     type: string
                     example: 'marco.torchiano@polito.it'
+                profileUrl: 
+                    type: string
+                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019"
+                profilePictureUrl:
+                    type: string
+                    example: "https://www.dauin.polito.it/personale/scheda/(matricola)/003019/foto"
+                facilityShortName:
+                    type: string
+                    example: "DAUIN"
             required: [role, facilityShortName, profileUrl, email]
         TeacherOverview:
             type: object
@@ -899,10 +1078,6 @@ components:
                 externalCoSupervisors:
                     type: string
                     example: 'Prof. Flavio Esposito - St. Louis University, USA'
-                types:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/ThesisProposalType'
                 attachment:
                     $ref: '#/components/schemas/Attachment'
                 link:
@@ -930,6 +1105,15 @@ components:
                 topic:
                     type: string
                     example: 'Un Applicativo Mobile per il Riconoscimento delle Attività Umane'
+                description:
+                    type: string
+                    example: "Offrire dati precisi e tempestivi riguardo le attività e i comportamenti degli individui si pone come obiettivo primario nel pervasive computing. Innumerevoli applicazioni potenziali sorgono in vari domini come la medicina, la sicurezza, l'intrattenimento e le operazioni tattiche. Nonostante il riconoscimento delle attività umane (HAR) sia un campo di esplorazione attivo da oltre un decennio, rimangono aspetti cruciali che, se risolti, potrebbero segnare un cambiamento significativo nel modo in cui gli individui interagiscono con i dispositivi mobili. In questa tesi lo studente svilupperà un'applicazione mobile che può raccogliere in modo efficiente i dati dell'utente, pre-elaborarli e usarli per riconoscere l'attività. Questa rilevazione probabilmente avverrà utilizzando un framework di apprendimento distribuito, come il Federated Learning (FL), per combinare la conoscenza di più dispositivi utente."
+                creationDate:
+                    type: string
+                    format: date-time
+                expirationDate:
+                    type: string
+                    format: date-time
                 isInternal:
                     type: boolean
                     description: If true, it's an internal thesis at Politecnico, otherwise it's external (in a company)
@@ -940,22 +1124,17 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ThesisProposalKeyword'
+                types:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ThesisProposalType'
                 supervisor:
                     $ref: '#/components/schemas/TeacherOverview'
                 internalCoSupervisors:
                     type: array
                     items:
                         $ref: '#/components/schemas/TeacherOverview'
-                description:
-                    type: string
-                    example: "Offrire dati precisi e tempestivi riguardo le attività e i comportamenti degli individui si pone come obiettivo primario nel pervasive computing. Innumerevoli applicazioni potenziali sorgono in vari domini come la medicina, la sicurezza, l'intrattenimento e le operazioni tattiche. Nonostante il riconoscimento delle attività umane (HAR) sia un campo di esplorazione attivo da oltre un decennio, rimangono aspetti cruciali che, se risolti, potrebbero segnare un cambiamento significativo nel modo in cui gli individui interagiscono con i dispositivi mobili. In questa tesi lo studente svilupperà un'applicazione mobile che può raccogliere in modo efficiente i dati dell'utente, pre-elaborarli e usarli per riconoscere l'attività. Questa rilevazione probabilmente avverrà utilizzando un framework di apprendimento distribuito, come il Federated Learning (FL), per combinare la conoscenza di più dispositivi utente."
-                creationDate:
-                    type: string
-                    format: date
-                expirationDate:
-                    type: string
-                    format: date
-            required: [id, topic, isInternal, isAbroad, supervisor, description, creationDate, expirationDate]
+            required: [id, topic, description, creationDate, expirationDate, isInternal, isAbroad, keywords, types, supervisor, internalCoSupervisors]
         ThesisProposalType:
             type: object
             properties:
