@@ -206,6 +206,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Error'
+    /thesis-proposals/{thesisProposalId}/attachment:
+        get:
+            tags:
+              - Thesis proposals
+            summary: Download thesis proposal attachment | Scarica allegato della proposta di tesi
+            operationId: downloadThesisProposalAttachment
+            parameters:
+                - $ref: '#/components/parameters/thesisProposalIdParam'
+                - $ref: '#/components/parameters/languageQueryParam'
+            responses:
+                200:
+                    description: Attachment
+                    content:
+                        application/octet-stream:
+                            schema:
+                                type: string
+                                format: binary
+                302:
+                    description: Redirect to attachment download
+                404:
+                    description: Attachment not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                500:
+                    $ref: '#/components/responses/ErrorResponse'    
     /companies:
         get:
             tags: 
